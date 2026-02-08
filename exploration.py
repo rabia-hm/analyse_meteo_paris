@@ -56,6 +56,29 @@ def checking_quality(df):
     else:
         print(f"Cohérence temp_min < temp_max : {len(erreurs)} erreurs")
 
+# ===== FONCTION : STATISTIQUES DESCRIPTIVES SIMPLIFIÉES =====
+def show_stats(df):
+    """
+    Affiche des statistiques simples pour les colonnes principales :
+    - count : nombre de valeurs
+    - mean  : moyenne
+    - std   : écart-type
+    - min   : valeur minimum
+    - 25%, 50%, 75% : quartiles
+    - max   : valeur maximum
+    """
+    print("\n--- STATISTIQUES DESCRIPTIVES ---")
+
+    # On choisit les colonnes à analyser
+    colonnes = ['temp_max', 'temp_min', 'temp_mean',
+                'precipitation_mm', 'wind_speed_max_kmh', 'humidity_mean_pct']
+
+    # On vérifie que les colonnes existent dans le dataframe
+    colonnes_existantes = [col for col in colonnes if col in df.columns]
+
+    # Affichage des stats
+    stats = df[colonnes_existantes].describe()
+    print(stats.round(1))
 
 
 # ===== FONCTION 2 : CALCUL DES MOYENNES PAR MOIS =====
