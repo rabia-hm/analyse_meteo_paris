@@ -16,24 +16,6 @@ def load_data(filename):
     return df
 
 
-# ===== FONCTION 2 : CALCUL DES MOYENNES PAR MOIS =====
-def calculate_monthly_averages(df):
-    """
-    Calcule la température moyenne par mois.
-
-    Paramètres :
-        df (DataFrame) : Données météo journalières
-    
-    Retourne :
-        Series : Moyenne de temp_mean pour chaque mois
-    """
-    df_copy = df.copy()  # On ne modifie pas le dataframe original
-    df_copy['mois'] = df_copy['date'].dt.month
-    monthly_avg = df_copy.groupby('mois')['temp_mean'].mean()
-    return monthly_avg
-
-
-# ===== FONCTION 3 : VERIFICATION QUALITÉ DES DONNÉES =====
 def checking_quality(df):
     """
     Vérifie la qualité des données :
@@ -64,7 +46,7 @@ def checking_quality(df):
     date_max = df['date'].max()
     print(f"Période : {date_min.date()} -> {date_max.date()}")
 
-    jours_attendus = (date_max - date_min).days + 1
+    jours_attendus = (date_max - date_min).days + 1 #annees bissextiles
     print(f"Jours présents : {len(df)} / {jours_attendus} attendus")
 
     # Vérifier la cohérence des températures
@@ -73,6 +55,27 @@ def checking_quality(df):
         print("Cohérence temp_min < temp_max : OK")
     else:
         print(f"Cohérence temp_min < temp_max : {len(erreurs)} erreurs")
+
+
+
+# ===== FONCTION 2 : CALCUL DES MOYENNES PAR MOIS =====
+def calculate_monthly_averages(df):
+    """
+    Calcule la température moyenne par mois.
+
+    Paramètres :
+        df (DataFrame) : Données météo journalières
+    
+    Retourne :
+        Series : Moyenne de temp_mean pour chaque mois
+    """
+    df_copy = df.copy()  # On ne modifie pas le dataframe original
+    df_copy['mois'] = df_copy['date'].dt.month
+    monthly_avg = df_copy.groupby('mois')['temp_mean'].mean()
+    return monthly_avg
+
+
+# ===== FONCTION 3 : VERIFICATION QUALITÉ DES DONNÉES =====
 
 
 # ===== PROGRAMME PRINCIPAL =====
