@@ -32,9 +32,12 @@ def calculate_monthly_averages(df):
     monthly_avg = df.groupby('mois')['temp_mean'].mean()
     return monthly_avg
 
+def checking(df):
+    df.info()
+
 # ===== PROGRAMME DE TEST =====
 if __name__ == "__main__":
-    df = load_data("data/weather_dataset_2024.csv")
+    df = load_data("data/paris_meteo_2024.csv")
     print("Données chargées :")
     print(df.head())
 
