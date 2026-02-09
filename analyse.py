@@ -112,6 +112,11 @@ def load_data(filename):
     """
     Charge les données depuis le CSV et convertit la colonne 'date' en datetime.
     """
+     # Vérifier si le fichier existe
+    if not os.path.exists(filename):
+        print(f"Erreur : le fichier {filename} n'existe pas !")
+        return None
+    
     df = pd.read_csv(filename)
     df['date'] = pd.to_datetime(df['date'])
     # Extraire le mois pour les analyses saisonnières
