@@ -1,31 +1,42 @@
+"""
+Projet Météo Paris 2024
+Script d'analyse simple :
+- Moyennes par saison
+- Détection des jours extrêmes
+- Corrélations entre variables
+"""
+
 import pandas as pd
 
-# 1. CHARGEMENT (La base)
-df = pd.read_csv("data/paris_meteo_2024.csv")
-df['date'] = pd.to_datetime(df['date'])
+# ===== CONFIGURATION =====
+INPUT_CSV = "data/paris_meteo_2024.csv"
 
-# On ajoute une colonne 'mois' pour l'analyse mensuelle
-df['mois'] = df['date'].dt.month
+# Définition des saisons et leurs mois avec un dictionnaire globale
+SAISONS = {
+    'Hiver': [12, 1, 2],
+    'Printemps': [3, 4, 5],
+    'Ete': [6, 7, 8],
+    'Automne': [9, 10, 11],
+}
 
-print("="*30)
-print("  ANALYSE MÉTÉO PARIS 2024")
-print("="*30)
 
-# 2. CALCULS DES RECORDS
-# idxmax() nous donne l'index de la ligne où se trouve la valeur max
-idx_max = df['temp_max'].idxmax()
-date_max = df.loc[idx_max, 'date']
-val_max = df.loc[idx_max, 'temp_max']
+# ===== FONCTION 1 : Charger et préparer les données =====
+def load_data(filepath):
+    """
+    Charge le CSV et crée la colonne 'mois'.
+    """
+    df = pd.read_csv(filepath, parse_dates=['date'])  # lit CSV et transforme date
+    df['mois'] = df['date'].dt.month                 # ajoute le mois
+    return df
 
-print(f"\n☀️ Record de chaleur : {val_max}°C le {date_max.strftime('%d/%m/%Y')}")
 
-# 3. CALCULS DES MOYENNES PAR MOIS (Le GroupBy)
-# On groupe par mois et on calcule la moyenne de la température
-moyennes_mensuelles = df.groupby('mois')['temp_mean'].mean()
-
-print("\n🌡️ Températures moyennes par mois :")
-print(moyennes_mensuelles.round(1)) # Ici on arrondit à 1 chiffre après la virgule
-
-# 4. CALCULS DES PRÉCIPITATIONS (Cumul)
-pluie_totale = df['precipitation_mm'].sum()
-print(f"\n🌧️ Précipitations totales sur l'année : {pluie_totale:.1f} mm")
+# ===== FONCTION 2 : Déterminer la saison =====
+#.items() → pour parcourir un dictionnaire et récupérer clé et valeur en même temps
+def get_saison(mois):
+    """
+    Retourne la saison correspondant au mois.
+    """
+    for saison, mois_list in SAISONS.items():
+        if mois in mois_list:
+            return saison
+    return "Inconnu"
