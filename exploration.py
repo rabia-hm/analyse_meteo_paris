@@ -1,16 +1,13 @@
 import pandas as pd
+import os
 
+INPUT_CSV = "data/paris_meteo_2024.csv"
 # ===== FONCTION 1 : CHARGEMENT DES DONNÉES =====
 def load_data(filename):
-    """
-    Charge les données depuis un fichier CSV et convertit la colonne 'date' en datetime.
-
-    Paramètres :
-        filename (str) : Chemin du fichier CSV
-    
-    Retourne :
-        DataFrame : Tableau avec colonnes 'date', 'temp_max', 'temp_min', 'temp_mean'
-    """
+   
+    if not os.path.exists(filename):
+        print(f"Erreur : le fichier {filename} n'existe pas !")
+        return None
     df = pd.read_csv(filename)
     df['date'] = pd.to_datetime(df['date'])
     return df
@@ -104,7 +101,7 @@ def calculate_monthly_averages(df):
 # ===== PROGRAMME PRINCIPAL =====
 if __name__ == "__main__":
     # Charger les données
-    df = load_data("data/paris_meteo_2024.csv")
+    df = load_data(INPUT_CSV)
     print("Données chargées :")
     print(df.head())
 

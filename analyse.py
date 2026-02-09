@@ -1,4 +1,20 @@
 import pandas as pd
+import os
+
+def load_data(filename):
+    """
+    Charge les données depuis le CSV et convertit la colonne 'date' en datetime.
+    """
+     # Vérifier si le fichier existe
+    if not os.path.exists(filename):
+        print(f"Erreur : le fichier {filename} n'existe pas !")
+        return None
+    
+    df = pd.read_csv(filename)
+    df['date'] = pd.to_datetime(df['date'])
+    # Extraire le mois pour les analyses saisonnières
+    df['mois'] = df['date'].dt.month
+    return df
 
 # ===== CONFIGURATION =====
 INPUT_CSV = "data/paris_meteo_2024.csv"  # chemin vers ton fichier CSV
@@ -107,21 +123,6 @@ def show_correlations(df):
     corr = df[colonnes_existantes].corr().round(2)
     print(corr)
 
-# ===== FONCTION 8 : Charger les données =====
-def load_data(filename):
-    """
-    Charge les données depuis le CSV et convertit la colonne 'date' en datetime.
-    """
-     # Vérifier si le fichier existe
-    if not os.path.exists(filename):
-        print(f"Erreur : le fichier {filename} n'existe pas !")
-        return None
-    
-    df = pd.read_csv(filename)
-    df['date'] = pd.to_datetime(df['date'])
-    # Extraire le mois pour les analyses saisonnières
-    df['mois'] = df['date'].dt.month
-    return df
 
 # ===== PROGRAMME PRINCIPAL =====
 def main():
