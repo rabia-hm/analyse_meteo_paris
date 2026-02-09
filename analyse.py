@@ -131,6 +131,8 @@ def main():
 
     # 1. Charger les données
     df = load_data(INPUT_CSV)
+    if df is None:
+        return  # Arrêter si le chargement a échoué
     print(f"\n{len(df)} jours chargés")
 
     # 2. Statistiques descriptives
