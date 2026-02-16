@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+# ===== CONFIGURATION =====
+INPUT_CSV = "data/paris_meteo_2024.csv"  # chemin vers ton fichier CSV
+
 def load_data(filename):
     """
     Charge les données depuis le CSV et convertit la colonne 'date' en datetime.
@@ -16,8 +19,6 @@ def load_data(filename):
     df['mois'] = df['date'].dt.month
     return df
 
-# ===== CONFIGURATION =====
-INPUT_CSV = "data/paris_meteo_2024.csv"  # chemin vers ton fichier CSV
 
 # ===== FONCTION 1 : Déterminer la saison à partir du mois =====
 def get_saison(mois):
