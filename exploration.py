@@ -1,9 +1,10 @@
 import pandas as pd
 import os
+from visualisation import graph_monthly_temp 
 
 INPUT_CSV = "data/paris_meteo_2024.csv"
 
-# ===== FONCTION 1 : CHARGEMENT DES DONNÉES =====
+# ===== CHARGEMENT DES DONNÉES =====
 def load_data(filename):
     """
     Charge le CSV et convertit la colonne 'date' en datetime
@@ -16,7 +17,7 @@ def load_data(filename):
     return df
 
 
-# ===== FONCTION 2 : VERIFICATION QUALITÉ DES DONNÉES =====
+# ===== VERIFICATION QUALITÉ DES DONNÉES =====
 def checking_quality(df):
     """
     Vérifie la qualité des données :
@@ -55,7 +56,7 @@ def checking_quality(df):
         print(f"Cohérence temp_min < temp_max : {len(erreurs)} erreurs")
 
 
-# ===== FONCTION 3 : STATISTIQUES DESCRIPTIVES SIMPLIFIÉES =====
+# ===== STATISTIQUES DESCRIPTIVES SIMPLIFIÉES =====
 def show_stats(df):
     """
     Affiche des statistiques simples pour les colonnes principales
@@ -68,7 +69,7 @@ def show_stats(df):
     print(stats.round(1))
 
 
-# ===== FONCTION 4 : CALCUL DES MOYENNES PAR MOIS =====
+# ===== CALCUL DES MOYENNES PAR MOIS =====
 def calculate_monthly_averages(df):
     """
     Calcule la température moyenne par mois
@@ -79,7 +80,7 @@ def calculate_monthly_averages(df):
     return monthly_avg
 
 
-# ===== FONCTION 5 : NETTOYAGE DES VALEURS MANQUANTES =====
+# =====  NETTOYAGE DES VALEURS MANQUANTES =====
 def clean_missing_values(df):
     """
     Nettoie les valeurs manquantes du dataset météo.
@@ -114,7 +115,9 @@ def clean_missing_values(df):
     return df
 
 
-# ===== PROGRAMME PRINCIPAL =====
+
+
+
 if __name__ == "__main__":
     # 1. Charger les données
     df = load_data(INPUT_CSV)
@@ -137,6 +140,8 @@ if __name__ == "__main__":
     monthly = calculate_monthly_averages(df)
     print("\nMoyennes par mois :")
     print(monthly)
+
+    graph_monthly_temp(monthly)                
 
     # 6. Statistiques descriptives globales
     show_stats(df)
