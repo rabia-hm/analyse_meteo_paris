@@ -1,30 +1,21 @@
 import pandas as pd
 import os
 
-# ===== CONFIGURATION =====
-INPUT_CSV = "data/paris_meteo_2024.csv"  # chemin vers ton fichier CSV
 
+INPUT_CSV = "data/paris_meteo_2024.csv" 
+
+# ===== CHARGEMENT DES DONNÉES =====
 def load_data(filename):
-    """
-    Charge les données depuis le CSV et convertit la colonne 'date' en datetime.
-    """
-     # Vérifier si le fichier existe
     if not os.path.exists(filename):
         print(f"Erreur : le fichier {filename} n'existe pas !")
         return None
-    
     df = pd.read_csv(filename)
     df['date'] = pd.to_datetime(df['date'])
-    # Extraire le mois pour les analyses saisonnières
     df['mois'] = df['date'].dt.month
     return df
 
-
-# ===== FONCTION 1 : Déterminer la saison à partir du mois =====
+# ===== Déterminer la saison =====
 def get_saison(mois):
-    """
-    Retourne la saison correspondant au mois.
-    """
     if mois in [12, 1, 2]:
         return "Hiver"
     elif mois in [3, 4, 5]:
@@ -34,125 +25,115 @@ def get_saison(mois):
     else:
         return "Automne"
 
-# ===== FONCTION 2 : Ajouter la colonne saison au dataframe =====
 def add_saison_column(df):
-    """
-    Ajoute une colonne 'saison' au dataframe en fonction de la colonne 'mois'.
-    """
     df['saison'] = df['mois'].apply(get_saison)
     return df
 
-# ===== FONCTION 3 : Calculer les moyennes pour une saison =====
+# ===== Moyennes par saison =====
 def moyenne_saison(df, saison):
-    """
-    Calcule les moyennes de température et la somme des précipitations pour une saison.
-    """
-    df_s = df[df['saison'] == saison]  # Filtrer les lignes de cette saison
+    df_s = df[df['saison'] == saison]
     temp_max_moy = df_s['temp_max'].mean()
     temp_min_moy = df_s['temp_min'].mean()
     temp_mean_moy = df_s['temp_mean'].mean()
-    
-    # Précipitation si la colonne existe
-    if 'precipitation_mm' in df.columns:
-        precip_total = df_s['precipitation_mm'].sum()
-        return temp_max_moy, temp_min_moy, temp_mean_moy, precip_total
-    else:
-        return temp_max_moy, temp_min_moy, temp_mean_moy, None
+    precip_total = df_s['precipitation_mm'].sum() if 'precipitation_mm' in df.columns else None
+    return temp_max_moy, temp_min_moy, temp_mean_moy, precip_total
 
-# ===== FONCTION 4 : Afficher les moyennes par saison =====
 def analyze_seasonal(df):
-    """
-    Boucle sur les saisons et affiche les moyennes de chaque saison.
-    """
-    saisons = ['Hiver', 'Printemps', 'Ete', 'Automne']
-    
-    # Ajouter la colonne saison
     df = add_saison_column(df)
-    
+    saisons = ['Hiver', 'Printemps', 'Ete', 'Automne']
+    summary_list = []
     print("\n--- MOYENNES PAR SAISON ---")
-    
     for s in saisons:
         temp_max, temp_min, temp_mean, precip = moyenne_saison(df, s)
+        summary_list.append({
+            'saison': s,
+            'temp_max': round(temp_max,1),
+            'temp_min': round(temp_min,1),
+            'temp_mean': round(temp_mean,1),
+            'precipitation_mm': round(precip,1) if precip is not None else None
+        })
         if precip is not None:
             print(f"{s} : max={temp_max:.1f}, min={temp_min:.1f}, mean={temp_mean:.1f}, pluie={precip:.1f}")
         else:
             print(f"{s} : max={temp_max:.1f}, min={temp_min:.1f}, mean={temp_mean:.1f}")
+    return pd.DataFrame(summary_list)
 
-# ===== FONCTION 5 : Détecter les jours extrêmes =====
+# ===== Détecter les jours extrêmes =====
 def detect_extremes(df):
-    """
-    Détecte les jours de canicule et de gel.
-    """
-    print("\n--- JOURS EXTREMES ---")
-
-    # Canicule : temp_max > 30
+    extremes = {}
     canicule = df[df['temp_max'] > 30]
     print(f"\nJours > 30°C : {len(canicule)}")
     if len(canicule) > 0:
-        print(canicule[['date', 'temp_max', 'temp_min']].to_string(index=False))
+        print(canicule[['date','temp_max','temp_min']].to_string(index=False))
+        extremes['extreme_canicule'] = canicule
 
-    # Gel : temp_min < 0
     gel = df[df['temp_min'] < 0]
     print(f"\nJours < 0°C : {len(gel)}")
     if len(gel) > 0:
-        print(gel[['date', 'temp_max', 'temp_min']].to_string(index=False))
+        print(gel[['date','temp_max','temp_min']].to_string(index=False))
+        extremes['extreme_gel'] = gel
 
-# ===== FONCTION 6 : Statistiques descriptives simples =====
+    return extremes
+
+# ===== Statistiques descriptives =====
 def show_stats(df):
-    """
-    Affiche statistiques simples : count, mean, std, min, quartiles, max
-    """
     print("\n--- STATISTIQUES DESCRIPTIVES ---")
     colonnes = ['temp_max', 'temp_min', 'temp_mean',
                 'precipitation_mm', 'wind_speed_max_kmh', 'humidity_mean_pct']
-
-    # On garde seulement les colonnes existantes pour éviter les erreurs
-    colonnes_existantes = [col for col in colonnes if col in df.columns]
+    colonnes_existantes = [c for c in colonnes if c in df.columns]
     stats = df[colonnes_existantes].describe().round(1)
     print(stats)
+    return stats
 
-# ===== FONCTION 7 : Corrélations =====
+# ===== Corrélations =====
 def show_correlations(df):
-    """
-    Calcule les corrélations entre les colonnes principales.
-    """
     print("\n--- CORRELATIONS ---")
     colonnes = ['temp_max', 'temp_min', 'temp_mean',
                 'precipitation_mm', 'wind_speed_max_kmh', 'humidity_mean_pct']
-    colonnes_existantes = [col for col in colonnes if col in df.columns]
-
+    colonnes_existantes = [c for c in colonnes if c in df.columns]
     corr = df[colonnes_existantes].corr().round(2)
     print(corr)
+    return corr
 
+# ===== GENERATION CSV =====
+def save_csvs(dataframes_dict):
+    os.makedirs("outputs", exist_ok=True)
+    for name, df in dataframes_dict.items():
+        # certaines DataFrames (corrélation) ont un index à conserver
+        if df.index.name or df.index.dtype != 'int64':
+            df.to_csv(f"outputs/{name}.csv")
+        else:
+            df.to_csv(f"outputs/{name}.csv", index=False)
+        print(f"CSV généré : outputs/{name}.csv")
 
-# ===== PROGRAMME PRINCIPAL =====
+# ===== MAIN =====
 def main():
     print("=" * 50)
     print("ANALYSES - METEO PARIS 2024")
     print("=" * 50)
 
-    # 1. Charger les données
     df = load_data(INPUT_CSV)
     if df is None:
-        return  # Arrêter si le chargement a échoué
-    print(f"\n{len(df)} jours chargés")
+        return
 
-    # 2. Statistiques descriptives
-    show_stats(df)
+    # Analyses
+    stats = show_stats(df)
+    seasonal_summary = analyze_seasonal(df)
+    extremes = detect_extremes(df)
+    corr = show_correlations(df)
 
-    # 3. Moyennes par saison
-    analyze_seasonal(df)
-
-    # 4. Jours extrêmes
-    detect_extremes(df)
-
-    # 5. Corrélations
-    show_correlations(df)
+    # Génération CSV
+    dataframes_to_save = {
+        "descriptive_stats": stats,
+        "seasonal_summary": seasonal_summary,
+        "correlations": corr
+    }
+    dataframes_to_save.update(extremes)
+    save_csvs(dataframes_to_save)
 
     print("\n" + "=" * 50)
     print("ANALYSES TERMINEES")
     print("=" * 50)
 
-# ===== EXECUTION =====
 if __name__ == "__main__":
     main()
