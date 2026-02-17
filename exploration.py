@@ -1,6 +1,7 @@
 import pandas as pd
 import os
-from visualisation import graph_monthly_temp 
+from visualisation import graph_monthly_avg_temp 
+from visualisation import graph_temperature_year
 
 INPUT_CSV = "data/paris_meteo_2024.csv"
 
@@ -141,7 +142,9 @@ if __name__ == "__main__":
     print("\nMoyennes par mois :")
     print(monthly)
 
-    graph_monthly_temp(monthly)                
+    graph_monthly_avg_temp(monthly)   
+    graph_temperature_year(df) 
+   
 
     # 6. Statistiques descriptives globales
     show_stats(df)

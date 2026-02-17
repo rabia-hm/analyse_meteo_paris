@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def graph_monthly_temp(monthly_avg):
+def graph_monthly_avg_temp(monthly_avg):
     """
     Trace un graphique simple de la température moyenne par mois.
 
@@ -18,8 +18,26 @@ def graph_monthly_temp(monthly_avg):
     plt.title("Température moyenne par mois - Paris 2024")  # Titre du graphique
     plt.xlabel("Mois")                                     # Axe X
     plt.ylabel("Température moyenne (°C)")                # Axe Y
-    plt.xticks(mois)                                       # Affiche tous les mois sur l'axe X
+    plt.xticks(mois)                                       # Affiche tous les mois sur l'axe X (force l'affichage)
     plt.grid(True)                                         # Ajoute une grille pour mieux lire les valeurs
 
     # Afficher le graphique
     plt.show()
+
+
+
+def graph_temperature_year(df):
+    """
+    Graphique de la température moyenne pour chaque jour del'année
+    """
+    plt.figure(figsize=(10,5))
+
+    plt.plot(df['date'], df['temp_mean'])
+
+    plt.title("Evolution de la température moyenne - Paris 2024")
+    plt.xlabel("Date")
+    plt.ylabel("Température (°C)")
+    plt.grid(True)
+
+    plt.show()
+
