@@ -17,7 +17,6 @@ Le fichier `data/paris_meteo_2024.csv` contient une ligne par jour avec les colo
 | `temp_min`            | Température minimale (°C)          |
 | `temp_mean`           | Température moyenne (°C)           |
 | `precipitation_mm`    | Précipitations (mm)                |
-| `wind_speed_max_kmh`  | Vitesse max du vent (km/h)         |
 | `humidity_mean_pct`   | Humidité moyenne (%)               |
 
 ## Structure du projet
