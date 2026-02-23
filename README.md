@@ -78,4 +78,3 @@ python analyse.py
 - **Python 3.12**
 - **pandas** — manipulation et analyse des données
 - **matplotlib** — visualisation graphique
-- **numpy** — calculs numériques
